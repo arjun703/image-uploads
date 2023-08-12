@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		#imageFromServer{
+			padding: 50px;
+			background: black;
+		}
+		#centered{
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 500px;
+		}
+		div img{
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+<div id="centered">
+	<input type="file" name="file" id="file">
+	<button onclick="upload()">Upload Image</button>
+	<div id="imageFromServer"></div>
+
+</div>
+
+
+<script type="text/javascript">
+	
+
+
+
+
+
+function sendPostRequest(base64String){
+
+
+	// URL to your server endpoint
+	const serverURL = 'http://localhost/myprojects/image-uploads/test.php'; // Replace with your actual server URL
+
+	// Create a new FormData object
+	var formData = new FormData();
+
+	// Append the base64 image string to the FormData object
+	formData.append('base64String', base64String.split(',')[1]);
+
+
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange  = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status == 200 ){
+
+document.querySelector('#imageFromServer').innerHTML = `<img src="data:image/png;base64,${JSON.parse(xmlhttp.responseText).newBase64}" alt="Modified Image with Border">`;
+
+			
+		}
+	}
+
+	xmlhttp.open('POST', serverURL, true);
+	xmlhttp.send(formData);
+
+}
+
+
+
+function upload(){
+
+	const fileInput = document.getElementById('file');
+
+    const selectedFile = fileInput.files[0];
+
+    if (selectedFile) {
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const base64String = event.target.result;
+
+            sendPostRequest(base64String)
+
+        };
+
+        reader.readAsDataURL(selectedFile);
+    }
+    else{
+    	alert("choose file");
+    }
+
+
+}
+
+</script>
+
+
+</body>
+</html>
