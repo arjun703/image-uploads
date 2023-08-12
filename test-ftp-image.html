@@ -7,39 +7,52 @@
 	<style type="text/css">
 		#imageFromServer{
 			padding: 50px;
-			background: black;
-		}
+					}
 		#centered{
 			position: fixed;
 			left: 50%;
 			top: 50%;
+			background: black;
+			color: white;
+			padding-top: 30px;
 			transform: translate(-50%, -50%);
-			width: 500px;
+			width: 700px;
 		}
 		div img{
 			width: 100%;
+		}
+		.d-flex{
+			display: flex;
+			align-items: center;
+		}
+		.flex-1{
+			flex: 1;
+		}
+		.p2{
+			padding: 10px;
 		}
 	</style>
 </head>
 <body>
 
 <div id="centered">
-	<input type="file" name="file" id="file">
-	<button onclick="upload()">Upload Image</button>
-	<div id="imageFromServer"></div>
-
+	<div style="text-align: center;">
+		<input type="file" name="file" id="file">
+		<button onclick="upload()">Upload Image</button>
+	</div>
+	<br><br>
+	<div class="d-flex">
+		<div class="flex-1 p2" id="imagePreview"></div>
+		<div class="flex-1" id="imageFromServer"></div>
+	</div>
 </div>
 
 
 <script type="text/javascript">
 	
-
-
-
-
-
 function sendPostRequest(base64String){
 
+	document.querySelector('#imageFromServer').innerHTML = `<h3 style="color:white">Uploading...Please Wait`;
 
 	// URL to your server endpoint
 	const serverURL = 'http://localhost/myprojects/image-uploads/test.php'; // Replace with your actual server URL
@@ -49,7 +62,6 @@ function sendPostRequest(base64String){
 
 	// Append the base64 image string to the FormData object
 	formData.append('base64String', base64String.split(',')[1]);
-
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange  = function(){
@@ -93,6 +105,29 @@ function upload(){
 
 }
 
+	const fileInput = document.getElementById('file');
+
+  	fileInput.onchange = function(){
+
+    const selectedFile = fileInput.files[0];
+
+
+    if (selectedFile) {
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const base64String = event.target.result;
+			
+			document.querySelector('#imagePreview').innerHTML = `<img src="${base64String}" alt="Modified Image with Border">`;
+
+
+        };
+
+        reader.readAsDataURL(selectedFile);
+    }
+
+  }
 </script>
 
 

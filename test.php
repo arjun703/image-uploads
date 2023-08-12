@@ -24,28 +24,36 @@ $unique_folder = generateRandomString();
 $remote_folder = $unique_folder;
 
 if (ftp_mkdir($conn, $remote_folder)) {
-    //echo 'Folder created successfully';
+
+	// Decode base64 data
+	$imageData = base64_decode($newBase64);
+
+	// Specify the file path to save the image
+	$uniqueImageName =  generateRandomString();
+
+	$localFilePath = $uniqueImageName.'.png';
+
+	// Save the image data to the file
+	file_put_contents($localFilePath, $imageData);
+
+	$remotePath = "{$remote_folder}/{$uniqueImageName}.png";
+
+	if (ftp_put($conn, $remotePath, $localFilePath, FTP_BINARY)) {
+
+		unlink($localFilePath);
+		$response = ['newBase64' => $newBase64];
+		echo json_encode($response);
+
+	} else {
+	 //  echo 'Image upload failed';
+		echo json_encode(['newBase64' => 'error']);
+	}
+
+
 } else {
    // echo 'Folder creation failed';
 }
 
-$remotePath = $remote_folder.'/image.png';
-
-$img = str_replace(' ', '+', $newBase64);
-$data = base64_decode($img);
-
-if (ftp_put($conn, $remotePath, $data, FTP_BINARY)) {
-//    echo "Image saved as  on FTP server";
-	$response = ['newBase64' => $newBase64];
-	echo json_encode($response);
-
-} else {
- //   echo 'Image upload failed';
-	echo json_encode(['newBase64' => 'error']);
-}
-
 ftp_close($conn);
-
-
 
 ?>
